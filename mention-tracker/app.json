@@ -1,0 +1,15 @@
+{
+    "id": "8f4c0d35-fc9a-4700-bf07-acee71049404",
+    "version": "0.0.1",
+    "requiredApiVersion": "^1.44.0",
+    "iconFile": "icon.png",
+    "author": {
+        "name": "Juned Khan",
+        "homepage": "https://github.com/ZunedKhan07",
+        "support": "https://github.com/zunedkhan07"
+    },
+    "name": "mention-tracker",
+    "nameSlug": "mention-tracker",
+    "classFile": "MentionTrackerApp.ts",
+    "description": "This is for Track mentions"
+}
