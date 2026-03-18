@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  rocketchat:
+    image: registry.rocket.chat/rocketchat/rocket.chat:latest
+    command: >
+      bash -c
+        "for i in `seq 1 30`; do
+          node main.js &&
+          s=$$? && break || s=$$?;
+          echo \"Tried $$i times. Waiting 5s...\";
+          sleep 5;
+        done; (exit $$s)"
+    restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads
+    environment:
+      - PORT=3000
+      - ROOT_URL=http://localhost:3000
+      - MONGO_URL=mongodb://mongo:27017/rocketchat
+      - MONGO_OPLOG_URL=mongodb://mongo:27017/local
+    depends_on:
+      - mongo
+    ports:
+      - 3000:3000
+
+  mongo:
+    image: mongo:5.0
+    restart: unless-stopped
+    volumes:
+      - ./data/db:/data/db
+    command: mongod --oplogSize 128 --replSet rs0
+
+  mongo-init-replica:
+    image: mongo:5.0
+    command: >
+      bash -c
+        "for i in `seq 1 30`; do
+          mongo --host mongo --eval \"rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }] })\" &&
+          s=$$? && break || s=$$?;
+          echo \"Tried $$i times. Waiting 5s...\";
+          sleep 5;
+        done; (exit $$s)"
+    depends_on:
+      - mongo
